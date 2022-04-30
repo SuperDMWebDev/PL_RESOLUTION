@@ -5,8 +5,8 @@
 -P OR -Q
 Q
 8
--S OR R
--T OR R
+R OR -S
+R OR -T
 -Q
 -P OR R
 -P OR -S

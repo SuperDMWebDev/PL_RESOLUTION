@@ -10,9 +10,28 @@ def sortArray(array):
       if len(array[0])==2:
          if array[0][0]!= '-':
             array[0].sort()
-def sortBigArray(array):
-   if len(array) == 2:
+def   sortBigArray(array):
+   if len(array) >= 2:
       array.sort()
+      for i in range(len(array)-1):
+         for j in range(i+1,len(array)):
+            if(len(array[i])==2 and len(array[j])==1):
+               if(array[i][1]>array[j][0]):
+                  temp=array[i]
+                  array[i]=array[j]
+                  array[j]=temp
+            if(len(array[i])==2 and len(array[j])==2):
+               if(array[i][1]>array[j][1]):
+                  temp=array[i]
+                  array[i]=array[j]
+                  array[j]=temp
+            if(len(array[i])==1 and len(array[j])==2):
+               if(array[i][0]>array[j][1]):
+                  temp=array[i]
+                  array[i]=array[j]
+                  array[j]=temp
+                 
+   
 def pl_resolve(C1, C2):
     res = []
     k=False
@@ -40,7 +59,7 @@ def pl_resolve(C1, C2):
                if(len(resTemp)==0):
                   print("Khong co")
                elif(len(resTemp)==1):
-                  res.append(resTemp[0])
+                  res.append(resTemp)
                elif(len(resTemp)==2):
                   if not checkTwoOpposite(resTemp[0],resTemp[1]):
                      res.append(resTemp)
@@ -76,7 +95,7 @@ def pl_resolution(KB, alpha):
     
     # Kết quả mỗi lần thực hiện vòng lặp
    result = []             
-   for i in range(len(clauses) - 1):
+   for i in range(len(clauses)):
          sortBigArray(clauses[i])
    while True:
          new=[]                   # Danh sách mệnh đề chứa kết quả thực hiện sau khi duyệt từ Ci, Cj
@@ -104,9 +123,19 @@ def pl_resolution(KB, alpha):
 
          #newArr1-clauses
          #result1 la new bi tru
-         for i in range(len(newArr1) - 1):
+         for i in range(len(newArr1)):
             sortBigArray(newArr1[i])
+         # loc cac phan tu trung trong nerArr1
          result1 = [a for a  in newArr1 if a not in clauses]
+         if result1!=[]:
+             for i in range(len(result1)-1):
+                for j in range(i+1,len(result1),1):
+                   if j>=0 and j<len(result1):
+                     print(j)
+                     if len(result1[i])==len(result1[j]):
+                        if result1[i]==result1[j]:
+                           result1.pop(j)
+                           j=j-2
          result.append(result1)  
          print(result)
                      #do nothing
@@ -115,10 +144,10 @@ def pl_resolution(KB, alpha):
 
          for i in range(len(newArr1)):
             if (len(newArr1[i])==0):          # Nếu tồn tại mệnh đề rỗng thì trả về đúng 
-                return True, result                 # và kết quả mỗi lần lặp đã thực hiện được
+                return True, result               
 
          if len(result1)==0:               # Nếu kết quả quả lần lặp này là con của clauses thì trả về sai 
-            return False, result                    # và kết quả mỗi lần lặp đã thực hiện được
+            return False, result                  
          for i in range(len(result1)):
             clauses.append(result1[i])
          print(clauses)
@@ -165,40 +194,44 @@ def getLiterals(lineStr):
 
     return alpha
 import os
-def writeFile(resultKey,result):
+def writeFile(resultKey,result,i):
    cwd = os.path.dirname(os.path.realpath(__file__))
    linkOutput = cwd + "\output";
    output_file_name=os.listdir(linkOutput);
-   FinalOutput=linkOutput+"\\"+"output05.txt";
+   FinalOutput=linkOutput+"\\"+output_file_name[i];
    file=open(FinalOutput,"w");
    for i in range(len(result)):
       k=True
-      for j in range(len(result[i])):
-         if k==True:
-            k=False
-            file.write(str(len(result[i]))+"\n")
-         if len(result[i][j])==0:
-            file.write("{}"+"\n")
-         elif len(result[i][j])==1:
-            file.write(result[i][j][0]+"\n")
-         elif len(result[i][j])==2:
-            file.write(result[i][j][0]+" OR "+result[i][j][1]+"\n")
-         else:
-            t=True
-            for u in range(len(result[i][j])):
-               if t==True:
-                  t=False
-                  file.write(result[i][j][0])
-               else:
-                  file.write(" OR "+result[i][j][u])
-            file.write("\n")
+      if(len(result[i])==0):
+         file.write(str(len(result[i]))+"\n")
+      else:
+         for j in range(len(result[i])):
+            if k==True:
+               k=False
+               file.write(str(len(result[i]))+"\n")
+            if len(result[i][j])==0:
+               file.write("{}"+"\n")
+            elif len(result[i][j])==1:
+               file.write(result[i][j][0]+"\n")
+            elif len(result[i][j])==2:
+               file.write(result[i][j][0]+" OR "+result[i][j][1]+"\n")
+            else:
+               t=True
+               for u in range(len(result[i][j])):
+                  if t==True:
+                     t=False
+                     file.write(result[i][j][0])
+                  else:
+                     file.write(" OR "+result[i][j][u])
+               file.write("\n")
    if resultKey:
         file.write('YES')
    else:
         file.write('NO')
    file.close()
 
-def readFile():
+def readFile(KB,AlphaSplit1,index):
+  
       cwd = os.path.dirname(os.path.realpath(__file__))
       linkInput=cwd+"\input";
 #    print(linkInput);
@@ -206,7 +239,7 @@ def readFile():
 #    print(input_file_name)
    # for i in range(len(input_file_name)):
       # dung input1.txt
-      FinalInput=linkInput+"\\"+"input05.txt";
+      FinalInput=linkInput+"\\"+input_file_name[4-index];
       print(FinalInput)
       file = open(FinalInput, 'r');
       clauseAlpha = file.readline()
@@ -215,9 +248,9 @@ def readFile():
          clauseAlpha = clauseAlpha[:-1]
         
       quantity= int(file.readline());
-   
-      KB = []
+      alphaSplit=[]
       KBTemp = []
+   
       for i in range(0,quantity,1):
          # print(i)
          clause=file.readline()
@@ -226,16 +259,21 @@ def readFile():
          KBTemp.append(clause)
       for i in range(len(KBTemp)):
          KB.append(getLiterals(KBTemp[i]))
-      alphaSplit = getLiterals(clauseAlpha)
-      
+      alphaSplit=getLiterals(clauseAlpha)
+      for i in range(len(alphaSplit)):
+         AlphaSplit1.append(alphaSplit[i])
 
       #truyen kb va alpha
+     
+def main():
+   for i in range(0,5):
+      KB = []
+      alphaSplit=[]
+      readFile(KB,alphaSplit,i)
       result, result1= pl_resolution(KB,alphaSplit);
       print(result1)
-      writeFile(result,result1)
+      writeFile(result,result1,i)
 
-def main():
-    readFile()
 
 
 main()

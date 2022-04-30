@@ -1,20 +1,20 @@
 6
 B OR C
 B OR D
--F OR A
+A OR -F
 -A OR E
 -C
 -B
 9
 B OR E
 A
--F OR C
+C OR -F
 -A
--F OR D
+D OR -F
 B
 C
 D
--F OR E
+E OR -F
 3
 E
 -F
